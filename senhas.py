@@ -36,6 +36,12 @@ lista_ordenada = senhas_preferenciais + senhas_gerais
 for i in range(len(lista_ordenada)):
     lista_ordenada[i]['naFrente'] = i
 
+#-------------------------------------------------------------------------------
+
+# terceiro milestone
+for i in range(len(lista_ordenada)):
+    lista_ordenada[i]['espera'] = 300000 * i
+
 # dump das senhas
 with open('dump_senhas', 'w') as fp:
     for senha in lista_ordenada:
