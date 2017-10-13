@@ -19,18 +19,27 @@ with urlopen(req) as response:
     post_to = resp['postTo'] # url de envio POST e os parâmetros necessários
     nome = resp['nome'] # o nome de quem envia
 
-# dump das senhas
-with open('dump_senhas', 'w') as fp:
-    for senha in senhas:
-        fp.write(str(senha) + '\n')
-
 # primeiro milestone
-## ordenando pela hora de emissão
-lista_ordenada = sorted(senhas, key = lambda x: int(x['emissao']))
+## ordenando pela hora de emissão e separação
+senhas_preferenciais = [senha for senha in senhas if senha['prioridade'] == 'preferencial']
+senhas_preferenciais = sorted(senhas_preferenciais, key = lambda x: int(x['emissao']))
+
+senhas_gerais = [senha for senha in senhas if senha['prioridade'] == 'geral']
+senhas_gerais = sorted(senhas_gerais, key = lambda x: int(x['emissao']))
+
+## atendimento preferencial primeiro
+lista_ordenada = senhas_preferenciais + senhas_gerais
+
+#-------------------------------------------------------------------------------
 
 # segundo milestone
 for i in range(len(lista_ordenada)):
     lista_ordenada[i]['naFrente'] = i
+
+# dump das senhas
+with open('dump_senhas', 'w') as fp:
+    for senha in lista_ordenada:
+        fp.write(str(senha) + '\n')
 
 # requisição POST final
 values = {'nome': nome, 'chave': chave, 'resultado': lista_ordenada}
@@ -41,3 +50,6 @@ with urlopen(req) as response:
     resp = response.read().decode('utf-8')
     with open('resultado.html', 'w') as resp_formatted:
         resp_formatted.write('<html><head><title>Resultado</title></head><body>' + resp + '</body></html>')
+
+if __name__ == "__main__":
+    pass
