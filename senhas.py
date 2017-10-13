@@ -8,17 +8,23 @@ url = 'http://seat.ind.br/processo-seletivo/desafio-2017-03.php'
 values = {'nome' : 'Pedro Guilherme Siqueira Moreira'}
 
 data = urlencode(values)
-full_url = url + '?' + data
+full_url = url + '?' + data # http://minha.url.com/etc?param1=val1&param2=val2...
+
 req = Request(full_url)
 with urlopen(req) as response:
-    resp = json.loads(response.read().decode('utf-8'))
-    senhas = resp['input']
-    chave = resp['chave']
-    post_to = resp['postTo']
-    nome = resp['nome']
-for senha in senhas:
-    print(senha)
-print('\nTotal de %d senhas' % len(senhas))
-print('Chave: %s' % chave)
-print('Postar para %s' % str(post_to))
-print('Nome: "%s"' % nome)
+    resp = json.loads(response.read().decode('utf-8')) # o resultado da requisição está em JSON
+    senhas = resp['input'] # lista com as senhas desordenadas
+    chave = resp['chave'] # a chave de envio
+    post_to = resp['postTo'] # url de envio POST e os parâmetros necessários
+    nome = resp['nome'] # o nome de quem envia
+
+lista_ordenada = sorted(senhas, key = lambda x: int(x['emissao']))
+
+values = {'nome': nome, 'chave': chave, 'resultado': lista_ordenada}
+data = urlencode(values).encode()
+
+req = Request(post_to['url'], data)
+with urlopen(req) as response:
+    resp = response.read().decode('utf-8')
+    with open('resultado.html', 'w') as resp_formatted:
+        resp_formatted.write('<html><head><title>Resultado</title></head><body>' + resp + '</body></html>')
