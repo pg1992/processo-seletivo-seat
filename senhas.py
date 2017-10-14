@@ -31,12 +31,32 @@ def senhas_na_frente(senhas):
 
 def tempo_de_espera(senhas):
     """Cria-se o campo 'espera' com o tempo estimado de espera
-    com base em quantas senhas estão 'naFrente' (assume-se
-    que cada atendimento dure 5min ou 300000ms)."""
+    com base no tempo de espera da senha anterior mais o intervalo
+    entre as emissões entre as senhas se esta for positiva."""
 
-    for senha in senhas:
-        senha['espera'] = 300000 * senha['naFrente']
+    senhas[0]['espera'] = 0
+    for i in range(1, len(senhas)):
+        senhas[i]['espera'] = senhas[i-1]['espera'] + max(0, senhas[i]['emissao'] - senhas[i-1]['emissao'])
     return senhas
+
+def histograma(senhas):
+    """Impressão do histograma de espera."""
+
+    bins = {}
+    for senha in senhas:
+        key = senha['espera'] // (5 * 60 * 1000) # 5 mins em ms
+        try:
+            bins[key].append(senha)
+        except:
+            bins[key] = [senha]
+
+    for b in range(max(bins.keys())):
+        try:
+            qtde = len(bins[b])
+        except:
+            qtde = 0
+        else:
+            print('< %03d mins: ' % ((b+1)*5) + '#' * qtde + ' ' + str(qtde))
 
 def dump_das_senhas(senhas, arquivo='dump_senhas'):
     """Rotina que imprime as senhas em um arquivo para
@@ -68,6 +88,7 @@ if __name__ == "__main__":
     senhas = ordenar_senhas(senhas) # primeiro milestone
     senhas = senhas_na_frente(senhas) # segundo milestone
     senhas = tempo_de_espera(senhas) # terceiro milestone
+    histograma(senhas) # quarto milestone
 
     #----- Fim do desafio -----#
 
