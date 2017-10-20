@@ -90,7 +90,7 @@ if __name__ == "__main__":
     senhas = ordenar_senhas(senhas) # primeiro milestone
     senhas = senhas_na_frente(senhas) # segundo milestone
     senhas = tempo_de_espera(senhas) # terceiro milestone
-    #histograma(senhas) # quarto milestone
+    histograma(senhas) # quarto milestone
 
     #----- Fim do desafio -----#
 
