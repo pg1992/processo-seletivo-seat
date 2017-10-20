@@ -101,9 +101,6 @@ if __name__ == "__main__":
     values = {'nome': nome, 'chave': chave, 'resultado': resultado}
     data = urlencode(values).encode('utf-8')
 
-    print(data)
-    print(post_to['url'])
-
     post_to_url = post_to['url']
 
     req = Request(post_to_url, data)
