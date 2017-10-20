@@ -10,6 +10,8 @@ import json
 def ordenar_senhas(senhas):
     """Ordena as senhas respeitando a prioridade de atendimento."""
 
+    senhas = [senha for senha in senhas if 'chamada' not in senha.keys()]
+
     senhas_preferenciais = [senha for senha in senhas if senha['prioridade'] == 'preferencial']
     senhas_preferenciais = sorted(senhas_preferenciais, key = lambda x: int(x['emissao']))
 
@@ -88,17 +90,23 @@ if __name__ == "__main__":
     senhas = ordenar_senhas(senhas) # primeiro milestone
     senhas = senhas_na_frente(senhas) # segundo milestone
     senhas = tempo_de_espera(senhas) # terceiro milestone
-    histograma(senhas) # quarto milestone
+    #histograma(senhas) # quarto milestone
 
     #----- Fim do desafio -----#
 
     dump_das_senhas(senhas)
 
     # requisição POST final
-    values = {'nome': nome, 'chave': chave, 'resultado': senhas}
-    data = urlencode(values).encode()
+    resultado = json.dumps(senhas)
+    values = {'nome': nome, 'chave': chave, 'resultado': resultado}
+    data = urlencode(values).encode('utf-8')
 
-    req = Request(post_to['url'], data)
+    print(data)
+    print(post_to['url'])
+
+    post_to_url = post_to['url']
+
+    req = Request(post_to_url, data)
     with urlopen(req) as response:
         resp = response.read().decode('utf-8')
         with open('resultado.html', 'w') as resp_formatted:
